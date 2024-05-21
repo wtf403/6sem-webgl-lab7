@@ -1,0 +1,14 @@
+{
+  "name": "6sem-webgl-lab7",
+  "version": "1.0.0",
+  "main": "script.js",
+  "scripts": {
+    "live": "live-server"
+  },
+  "author": "Max Kiselev",
+  "license": "MIT",
+  "description": "",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

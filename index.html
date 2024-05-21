@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>lab7</title>
+</head>
+
+<body>
+  <canvas id="canvas"></canvas>
+  <div id="uiContainer">
+    <div id="ui">
+      <div id="x"></div>
+      <div id="y"></div>
+      <div id="z"></div>
+      <div id="angleX"></div>
+      <div id="angleY"></div>
+      <div id="angleZ"></div>
+      <div id="fudgeFactor"></div>
+      <div id="fieldOfView"></div>
+      <div id="cameraAngle"></div>
+    </div>
+  </div>
+  <!-- vertex shader -->
+  <script id="vertex-shader-2d" type="x-shader/x-vertex">
+  attribute vec4 a_position;
+  attribute vec4 a_color;
+  
+  uniform mat4 u_matrix;
+  uniform float u_fudgeFactor;
+  
+  varying vec4 v_color;
+  
+  void main() {
+    // Multiply the position by the matrix.
+    vec4 position = u_matrix * a_position;
+  
+    // Adjust the z to divide by
+    float zToDivideBy = 1.0 + position.z * u_fudgeFactor;
+  
+    // Divide x and y by z.
+    gl_Position = vec4(position.xy / zToDivideBy, position.zw);
+  
+    // Pass the color to the fragment shader.
+    v_color = a_color;
+  }
+</script>
+  <!-- fragment shader -->
+  <script id="fragment-shader-2d" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform vec4 u_color;
+
+void main() {
+   gl_FragColor = u_color;
+}
+</script>
+  <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
+  <script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
