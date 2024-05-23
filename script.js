@@ -1,31 +1,191 @@
+const arr = [
+  // B front
+  -60, 40, 5, -60, -40, 5, -50, 40, 5,
+
+  -60, -40, 5, -50, 40, 5, -50, -40, 5,
+
+  -50, 40, 5, -10, 30, 5, -10, 40, 5,
+
+  -50, 40, 5, -50, 30, 5, -10, 30, 5,
+
+  -25, 5, 5, -20, 30, 5, -10, 30, 5,
+
+  -35, 5, 5, -25, 5, 5, -20, 30, 5,
+
+  -50, 5, 5, -10, 5, 5, -10, -5, 5,
+
+  -50, 5, 5, -50, -5, 5, -10, -5, 5,
+
+  -20, -5, 5, -20, -40, 5, -10, -40, 5,
+
+  -20, -5, 5, -10, -5, 5, -10, -40, 5,
+
+  -50, -30, 5, -50, -40, 5, -20, -30, 5,
+
+  -50, -40, 5, -20, -30, 5, -20, -40, 5,
+
+  // B back
+  -60, 40, -5, -60, -40, -5, -50, 40, -5,
+
+  -60, -40, -5, -50, 40, -5, -50, -40, -5,
+
+  -50, 40, -5, -10, 30, -5, -10, 40, -5,
+
+  -50, 40, -5, -50, 30, -5, -10, 30, -5,
+
+  -25, 5, -5, -20, 30, -5, -10, 30, -5,
+
+  -35, 5, -5, -25, 5, -5, -20, 30, -5,
+
+  -50, 5, -5, -10, 5, -5, -10, -5, -5,
+
+  -50, 5, -5, -50, -5, -5, -10, -5, -5,
+
+  -20, -5, -5, -20, -40, -5, -10, -40, -5,
+
+  -20, -5, -5, -10, -5, -5, -10, -40, -5,
+
+  -50, -30, -5, -50, -40, -5, -20, -30, -5,
+
+  -50, -40, -5, -20, -30, -5, -20, -40, -5,
+
+  // B connections
+  -10, 5, -5, -10, 5, 5, -10, -40, 5,
+
+  -10, 5, -5, -10, -40, -5, -10, -40, 5,
+
+  -10, -40, -5, -10, -40, 5, -60, -40, 5,
+
+  -10, -40, -5, -60, -40, 5, -60, -40, -5,
+
+  -10, 5, -5, -10, 5, 5, -25, 5, 5,
+
+  -10, 5, -5, -25, 5, 5, -25, 5, -5,
+
+  -25, 5, -5, -25, 5, 5, -10, 30, -5,
+
+  -25, 5, 5, -10, 30, -5, -10, 30, 5,
+
+  -10, 30, 5, -10, 40, 5, -10, 30, -5,
+
+  -10, 30, -5, -10, 40, 5, -10, 40, -5,
+
+  -10, 40, -5, -10, 40, 5, -60, 40, -5,
+
+  -10, 40, 5, -60, 40, -5, -60, 40, 5,
+
+  -60, -40, 5, -60, -40, -5, -60, 40, 5,
+
+  -60, -40, -5, -60, 40, -5, -60, 40, 5,
+
+  -35, 5, 5, -35, 5, -5, -50, 5, -5,
+
+  -35, 5, 5, -50, 5, -5, -50, 5, 5,
+
+  -20, -5, 5, -20, -5, -5, -50, -5, 5,
+
+  -20, -5, -5, -50, 5, -5, -50, -5, 5,
+
+  // M front
+  45, -40, 5, 50, 40, 5, 60, -40, 5,
+
+  50, 40, 5, 45, -40, 5, 40, 10, 5,
+
+  50, 40, 5, 40, 10, 5, 30, 15, 5,
+
+  40, 10, 5, 30, 15, 5, 30, -5, 5,
+
+  30, 15, 5, 30, -5, 5, 20, 10, 5,
+
+  30, 15, 5, 20, 10, 5, 10, 40, 5,
+
+  20, 10, 5, 15, -40, 5, 10, 40, 5,
+
+  15, -40, 5, 10, 40, 5, 0, -40, 5,
+
+  // M front
+  45, -40, -5, 50, 40, -5, 60, -40, -5,
+
+  50, 40, -5, 45, -40, -5, 40, 10, -5,
+
+  50, 40, -5, 40, 10, -5, 30, 15, -5,
+
+  40, 10, -5, 30, 15, -5, 30, -5, -5,
+
+  30, 15, -5, 30, -5, -5, 20, 10, -5,
+
+  30, 15, -5, 20, 10, -5, 10, 40, -5,
+
+  20, 10, -5, 15, -40, -5, 10, 40, -5,
+
+  15, -40, -5, 10, 40, -5, 0, -40, -5,
+
+  // M connections
+
+  0, -40, 5, 0, -40, -5, 15, -40, 5,
+
+  0, -40, -5, 15, -40, 5, 15, -40, -5,
+
+  45, -40, 5, 45, -40, -5, 60, -40, 5,
+
+  45, -40, -5, 60, -40, 5, 60, -40, -5,
+
+  15, -40, 5, 15, -40, -5, 20, 10, 5,
+
+  15, -40, -5, 20, 10, 5, 20, 10, -5,
+
+  20, 10, 5, 20, 10, -5, 30, -5, 5,
+
+  30, -5, 5, 30, -5, -5, 20, 10, -5,
+
+  30, -5, 5, 30, -5, -5, 40, 10, -5,
+
+  30, -5, 5, 40, 10, -5, 40, 10, 5,
+
+  40, 10, 5, 40, 10, -5, 45, -40, -5,
+
+  45, -40, -5, 45, -40, 5, 40, 10, 5,
+
+  60, -40, 5, 60, -40, -5, 50, 40, -5,
+
+  60, -40, 5, 50, 40, -5, 50, 40, 5,
+
+  50, 40, 5, 50, 40, -5, 30, 15, -5,
+
+  50, 40, 5, 30, 15, -5, 30, 15, 5,
+
+  30, 15, 5, 30, 15, -5, 10, 40, -5,
+
+  30, 15, 5, 10, 40, 5, 10, 40, -5,
+
+  0, -40, 5, 0, -40, -5, 10, 40, -5,
+
+  0, -40, 5, 10, 40, 5, 10, 40, -5,
+];
+
 function main() {
   // Get A WebGL context
   /** @type {HTMLCanvasElement} */
-  var canvas = document.querySelector("#canvas");
-  var gl = canvas.getContext("webgl");
+  let canvas = document.querySelector("#canvas");
+  let gl = canvas.getContext("webgl");
   if (!gl) {
     return;
   }
 
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-  var program = webglUtils.createProgramFromScripts(gl, [
+  let program = webglUtils.createProgramFromScripts(gl, [
     "vertex-shader-2d",
     "fragment-shader-2d",
   ]);
-  // gl.useProgram(program);
+  gl.useProgram(program);
 
-  var positionLocation = gl.getAttribLocation(program, "a_position");
-  var colorLocation = gl.getUniformLocation(program, "u_color");
-  var matrixLocation = gl.getUniformLocation(program, "u_matrix");
-  var fudgeLocation = gl.getUniformLocation(program, "u_fudgeFactor");
+  let positionLocation = gl.getAttribLocation(program, "a_position");
+  let colorLocation = gl.getUniformLocation(program, "u_color");
+  let matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
-  var positionBuffer = gl.createBuffer();
-
+  let positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-  //Устанавливаем данные геометрии в буфер
+  // Set geometry data
   setGeometry(gl);
 
   function radToDeg(r) {
@@ -36,60 +196,48 @@ function main() {
     return (d * Math.PI) / 180;
   }
 
-  //Начальные позиции
-  var translation = [-100, -50, -360];
-  var rotation = [degToRad(0), degToRad(20), degToRad(360)];
-  var color = [Math.random(), Math.random(), Math.random(), 1];
-  var fieldOfViewRadians = degToRad(30);
-  var fudgeFactor = 0;
-
-  //Камера
-  var cameraAngleRadians = degToRad(0);
+  // Initial positions
+  let translation = [0, 0, -360]; // Center the letter and move it back a bit for visibility
+  let rotation = [degToRad(0), degToRad(0), degToRad(0)];
+  let color = [Math.random(), Math.random(), Math.random(), 1];
+  let fieldOfViewRadians = degToRad(18);
 
   drawScene();
 
-  // Ползунки
+  // Sliders
   webglLessonsUI.setupSlider("#x", {
     slide: updatePosition(0),
-    max: gl.canvas.width,
+    min: -200,
+    max: 200,
   });
   webglLessonsUI.setupSlider("#y", {
     slide: updatePosition(1),
-    max: gl.canvas.height,
+    min: -200,
+    max: 200,
   });
   webglLessonsUI.setupSlider("#angleX", {
     value: radToDeg(rotation[0]),
     slide: updateRotation(0),
+    min: -360,
     max: 360,
   });
   webglLessonsUI.setupSlider("#angleY", {
     value: radToDeg(rotation[1]),
     slide: updateRotation(1),
+    min: -360,
     max: 360,
   });
   webglLessonsUI.setupSlider("#angleZ", {
     value: radToDeg(rotation[2]),
     slide: updateRotation(2),
+    min: -360,
     max: 360,
-  });
-  webglLessonsUI.setupSlider("#fudgeFactor", {
-    value: fudgeFactor,
-    slide: updateFudgeFactor,
-    max: 2,
-    step: 0.001,
-    precision: 3,
   });
   webglLessonsUI.setupSlider("#fieldOfView", {
     value: radToDeg(fieldOfViewRadians),
     slide: updateFieldOfView,
     min: 1,
     max: 179,
-  });
-  webglLessonsUI.setupSlider("#cameraAngle", {
-    value: radToDeg(cameraAngleRadians),
-    slide: updateCameraAngle,
-    min: -360,
-    max: 360,
   });
 
   function updatePosition(index) {
@@ -101,26 +249,15 @@ function main() {
 
   function updateRotation(index) {
     return function (event, ui) {
-      var angleInDegrees = ui.value;
-      var angleInRadians = (angleInDegrees * Math.PI) / 180;
+      let angleInDegrees = ui.value;
+      let angleInRadians = (angleInDegrees * Math.PI) / 180;
       rotation[index] = angleInRadians;
       drawScene();
     };
   }
 
-  function updateFudgeFactor(event, ui) {
-    fudgeFactor = ui.value;
-    drawScene();
-  }
-
-  //Перспектива
   function updateFieldOfView(event, ui) {
     fieldOfViewRadians = degToRad(ui.value);
-    drawScene();
-  }
-
-  function updateCameraAngle(event, ui) {
-    cameraAngleRadians = degToRad(ui.value);
     drawScene();
   }
 
@@ -129,7 +266,9 @@ function main() {
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    gl.enable(gl.DEPTH_TEST);
 
     gl.useProgram(program);
 
@@ -137,11 +276,11 @@ function main() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-    var size = 3;
-    var type = gl.FLOAT;
-    var normalize = false;
-    var stride = 0;
-    var offset = 0;
+    let size = 3;
+    let type = gl.FLOAT;
+    let normalize = false;
+    let stride = 0;
+    let offset = 0;
     gl.vertexAttribPointer(
       positionLocation,
       size,
@@ -153,11 +292,10 @@ function main() {
 
     gl.uniform4fv(colorLocation, color);
 
-    //Задем проекционную матрицу
-    var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    var zNear = 1;
-    var zFar = 2000;
-    var matrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
+    let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    let zNear = 1;
+    let zFar = 2000;
+    let matrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 
     matrix = m4.translate(
       matrix,
@@ -171,44 +309,16 @@ function main() {
 
     gl.uniformMatrix4fv(matrixLocation, false, matrix);
 
-    var numFs = 5;
-    var radius = 200;
-
-    // Вычисление матрицы камеры
-    var cameraMatrix = m4.yRotation(cameraAngleRadians);
-    cameraMatrix = m4.translate(cameraMatrix, 0, 0, radius * 1.5);
-
-    // Создаём обратную матрицу камеры
-    var viewMatrix = m4.inverse(cameraMatrix);
-
-    // Получаем видо-проекционную матрицу
-    var viewProjectionMatrix = m4.multiply(matrix, viewMatrix);
-
-    //FudgeLocation
-    gl.uniform1f(fudgeLocation, fudgeFactor);
-
-    var angle = (1 * Math.PI * 2) / numFs;
-    var x = Math.cos(angle) * radius;
-    var y = Math.sin(angle) * radius;
-
-    // Вычисляем матрицу для F
-    var matrix = m4.translate(viewProjectionMatrix, x, 0, y);
-
-    // Задаем матрицу
-    gl.uniformMatrix4fv(matrixLocation, false, matrix);
-
-    // Отрисовываем геометрию
-    var primitiveType = gl.TRIANGLES;
-    var offset = 0;
-    var count = 64 * 6;
+    let primitiveType = gl.TRIANGLES;
+    let count = arr.length / 3;
     gl.drawArrays(primitiveType, offset, count);
   }
 }
 
-var m4 = {
+let m4 = {
   perspective: function (fieldOfViewInRadians, aspect, near, far) {
-    var f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
-    var rangeInv = 1.0 / (near - far);
+    let f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
+    let rangeInv = 1.0 / (near - far);
 
     return [
       f / aspect,
@@ -229,60 +339,57 @@ var m4 = {
       0,
     ];
   },
-
-  projection: function (width, height, depth) {
-    return [
-      2 / width,
-      0,
-      0,
-      0,
-      0,
-      -2 / height,
-      0,
-      0,
-      0,
-      0,
-      2 / depth,
-      0,
-      -1,
-      1,
-      0,
-      1,
-    ];
+  translation: function (tx, ty, tz) {
+    return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1];
+  },
+  xRotation: function (angleInRadians) {
+    let c = Math.cos(angleInRadians);
+    let s = Math.sin(angleInRadians);
+    return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1];
+  },
+  yRotation: function (angleInRadians) {
+    let c = Math.cos(angleInRadians);
+    let s = Math.sin(angleInRadians);
+    return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1];
+  },
+  zRotation: function (angleInRadians) {
+    let c = Math.cos(angleInRadians);
+    let s = Math.sin(angleInRadians);
+    return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
   },
   multiply: function (a, b) {
-    var a00 = a[0 * 4 + 0];
-    var a01 = a[0 * 4 + 1];
-    var a02 = a[0 * 4 + 2];
-    var a03 = a[0 * 4 + 3];
-    var a10 = a[1 * 4 + 0];
-    var a11 = a[1 * 4 + 1];
-    var a12 = a[1 * 4 + 2];
-    var a13 = a[1 * 4 + 3];
-    var a20 = a[2 * 4 + 0];
-    var a21 = a[2 * 4 + 1];
-    var a22 = a[2 * 4 + 2];
-    var a23 = a[2 * 4 + 3];
-    var a30 = a[3 * 4 + 0];
-    var a31 = a[3 * 4 + 1];
-    var a32 = a[3 * 4 + 2];
-    var a33 = a[3 * 4 + 3];
-    var b00 = b[0 * 4 + 0];
-    var b01 = b[0 * 4 + 1];
-    var b02 = b[0 * 4 + 2];
-    var b03 = b[0 * 4 + 3];
-    var b10 = b[1 * 4 + 0];
-    var b11 = b[1 * 4 + 1];
-    var b12 = b[1 * 4 + 2];
-    var b13 = b[1 * 4 + 3];
-    var b20 = b[2 * 4 + 0];
-    var b21 = b[2 * 4 + 1];
-    var b22 = b[2 * 4 + 2];
-    var b23 = b[2 * 4 + 3];
-    var b30 = b[3 * 4 + 0];
-    var b31 = b[3 * 4 + 1];
-    var b32 = b[3 * 4 + 2];
-    var b33 = b[3 * 4 + 3];
+    let a00 = a[0 * 4 + 0];
+    let a01 = a[0 * 4 + 1];
+    let a02 = a[0 * 4 + 2];
+    let a03 = a[0 * 4 + 3];
+    let a10 = a[1 * 4 + 0];
+    let a11 = a[1 * 4 + 1];
+    let a12 = a[1 * 4 + 2];
+    let a13 = a[1 * 4 + 3];
+    let a20 = a[2 * 4 + 0];
+    let a21 = a[2 * 4 + 1];
+    let a22 = a[2 * 4 + 2];
+    let a23 = a[2 * 4 + 3];
+    let a30 = a[3 * 4 + 0];
+    let a31 = a[3 * 4 + 1];
+    let a32 = a[3 * 4 + 2];
+    let a33 = a[3 * 4 + 3];
+    let b00 = b[0 * 4 + 0];
+    let b01 = b[0 * 4 + 1];
+    let b02 = b[0 * 4 + 2];
+    let b03 = b[0 * 4 + 3];
+    let b10 = b[1 * 4 + 0];
+    let b11 = b[1 * 4 + 1];
+    let b12 = b[1 * 4 + 2];
+    let b13 = b[1 * 4 + 3];
+    let b20 = b[2 * 4 + 0];
+    let b21 = b[2 * 4 + 1];
+    let b22 = b[2 * 4 + 2];
+    let b23 = b[2 * 4 + 3];
+    let b30 = b[3 * 4 + 0];
+    let b31 = b[3 * 4 + 1];
+    let b32 = b[3 * 4 + 2];
+    let b33 = b[3 * 4 + 3];
     return [
       b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30,
       b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31,
@@ -302,319 +409,23 @@ var m4 = {
       b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33,
     ];
   },
-
-  translation: function (tx, ty, tz) {
-    return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1];
-  },
-  xRotation: function (angleInRadians) {
-    var c = Math.cos(angleInRadians);
-    var s = Math.sin(angleInRadians);
-
-    return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1];
-  },
-  yRotation: function (angleInRadians) {
-    var c = Math.cos(angleInRadians);
-    var s = Math.sin(angleInRadians);
-
-    return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1];
-  },
-  zRotation: function (angleInRadians) {
-    var c = Math.cos(angleInRadians);
-    var s = Math.sin(angleInRadians);
-
-    return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-  },
   translate: function (m, tx, ty, tz) {
     return m4.multiply(m, m4.translation(tx, ty, tz));
   },
-
   xRotate: function (m, angleInRadians) {
     return m4.multiply(m, m4.xRotation(angleInRadians));
   },
-
   yRotate: function (m, angleInRadians) {
     return m4.multiply(m, m4.yRotation(angleInRadians));
   },
-
   zRotate: function (m, angleInRadians) {
     return m4.multiply(m, m4.zRotation(angleInRadians));
-  },
-
-  inverse: function (m) {
-    var m00 = m[0 * 4 + 0];
-    var m01 = m[0 * 4 + 1];
-    var m02 = m[0 * 4 + 2];
-    var m03 = m[0 * 4 + 3];
-    var m10 = m[1 * 4 + 0];
-    var m11 = m[1 * 4 + 1];
-    var m12 = m[1 * 4 + 2];
-    var m13 = m[1 * 4 + 3];
-    var m20 = m[2 * 4 + 0];
-    var m21 = m[2 * 4 + 1];
-    var m22 = m[2 * 4 + 2];
-    var m23 = m[2 * 4 + 3];
-    var m30 = m[3 * 4 + 0];
-    var m31 = m[3 * 4 + 1];
-    var m32 = m[3 * 4 + 2];
-    var m33 = m[3 * 4 + 3];
-    var tmp_0 = m22 * m33;
-    var tmp_1 = m32 * m23;
-    var tmp_2 = m12 * m33;
-    var tmp_3 = m32 * m13;
-    var tmp_4 = m12 * m23;
-    var tmp_5 = m22 * m13;
-    var tmp_6 = m02 * m33;
-    var tmp_7 = m32 * m03;
-    var tmp_8 = m02 * m23;
-    var tmp_9 = m22 * m03;
-    var tmp_10 = m02 * m13;
-    var tmp_11 = m12 * m03;
-    var tmp_12 = m20 * m31;
-    var tmp_13 = m30 * m21;
-    var tmp_14 = m10 * m31;
-    var tmp_15 = m30 * m11;
-    var tmp_16 = m10 * m21;
-    var tmp_17 = m20 * m11;
-    var tmp_18 = m00 * m31;
-    var tmp_19 = m30 * m01;
-    var tmp_20 = m00 * m21;
-    var tmp_21 = m20 * m01;
-    var tmp_22 = m00 * m11;
-    var tmp_23 = m10 * m01;
-
-    var t0 =
-      tmp_0 * m11 +
-      tmp_3 * m21 +
-      tmp_4 * m31 -
-      (tmp_1 * m11 + tmp_2 * m21 + tmp_5 * m31);
-    var t1 =
-      tmp_1 * m01 +
-      tmp_6 * m21 +
-      tmp_9 * m31 -
-      (tmp_0 * m01 + tmp_7 * m21 + tmp_8 * m31);
-    var t2 =
-      tmp_2 * m01 +
-      tmp_7 * m11 +
-      tmp_10 * m31 -
-      (tmp_3 * m01 + tmp_6 * m11 + tmp_11 * m31);
-    var t3 =
-      tmp_5 * m01 +
-      tmp_8 * m11 +
-      tmp_11 * m21 -
-      (tmp_4 * m01 + tmp_9 * m11 + tmp_10 * m21);
-
-    var d = 1.0 / (m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3);
-
-    return [
-      d * t0,
-      d * t1,
-      d * t2,
-      d * t3,
-      d *
-        (tmp_1 * m10 +
-          tmp_2 * m20 +
-          tmp_5 * m30 -
-          (tmp_0 * m10 + tmp_3 * m20 + tmp_4 * m30)),
-      d *
-        (tmp_0 * m00 +
-          tmp_7 * m20 +
-          tmp_8 * m30 -
-          (tmp_1 * m00 + tmp_6 * m20 + tmp_9 * m30)),
-      d *
-        (tmp_3 * m00 +
-          tmp_6 * m10 +
-          tmp_11 * m30 -
-          (tmp_2 * m00 + tmp_7 * m10 + tmp_10 * m30)),
-      d *
-        (tmp_4 * m00 +
-          tmp_9 * m10 +
-          tmp_10 * m20 -
-          (tmp_5 * m00 + tmp_8 * m10 + tmp_11 * m20)),
-      d *
-        (tmp_12 * m13 +
-          tmp_15 * m23 +
-          tmp_16 * m33 -
-          (tmp_13 * m13 + tmp_14 * m23 + tmp_17 * m33)),
-      d *
-        (tmp_13 * m03 +
-          tmp_18 * m23 +
-          tmp_21 * m33 -
-          (tmp_12 * m03 + tmp_19 * m23 + tmp_20 * m33)),
-      d *
-        (tmp_14 * m03 +
-          tmp_19 * m13 +
-          tmp_22 * m33 -
-          (tmp_15 * m03 + tmp_18 * m13 + tmp_23 * m33)),
-      d *
-        (tmp_17 * m03 +
-          tmp_20 * m13 +
-          tmp_23 * m23 -
-          (tmp_16 * m03 + tmp_21 * m13 + tmp_22 * m23)),
-      d *
-        (tmp_14 * m22 +
-          tmp_17 * m32 +
-          tmp_13 * m12 -
-          (tmp_16 * m32 + tmp_12 * m12 + tmp_15 * m22)),
-      d *
-        (tmp_20 * m32 +
-          tmp_12 * m02 +
-          tmp_19 * m22 -
-          (tmp_18 * m22 + tmp_21 * m32 + tmp_13 * m02)),
-      d *
-        (tmp_18 * m12 +
-          tmp_23 * m32 +
-          tmp_15 * m02 -
-          (tmp_22 * m32 + tmp_14 * m02 + tmp_19 * m12)),
-      d *
-        (tmp_22 * m22 +
-          tmp_16 * m02 +
-          tmp_21 * m12 -
-          (tmp_20 * m12 + tmp_23 * m22 + tmp_17 * m02)),
-    ];
   },
 };
 
 // Fill the buffer with the values that define a letter 'F'.
 function setGeometry(gl) {
-  gl.bufferData(
-    gl.ARRAY_BUFFER,
-    new Float32Array([
-      //A1 перед
-      25, 100, 0, 15, 100, 0, 0, 0, 0,
-
-      0, 0, 0, 10, 0, 0, 25, 100, 0,
-
-      10, 30, 0, 10, 20, 0, 30, 30, 0,
-
-      10, 20, 0, 30, 20, 0, 30, 30, 0,
-
-      25, 100, 0, 15, 100, 0, 30, 0, 0,
-
-      40, 0, 0, 30, 0, 0, 25, 100, 0,
-
-      //A1 дно
-      25, 100, 10, 15, 100, 10, 0, 0, 10,
-
-      0, 0, 10, 10, 0, 10, 25, 100, 10,
-
-      10, 30, 10, 10, 20, 10, 30, 30, 10,
-
-      10, 20, 10, 30, 20, 10, 30, 30, 10,
-
-      10, 20, 10, 30, 20, 10, 30, 30, 10,
-
-      25, 100, 10, 15, 100, 10, 30, 0, 10,
-
-      25, 100, 10, 15, 100, 10, 30, 0, 10,
-
-      40, 0, 10, 30, 0, 10, 25, 100, 10,
-
-      //3d стенки
-      0, 0, 0, 0, 0, 10, 15, 100, 10,
-
-      15, 100, 10, 15, 100, 0, 0, 0, 0,
-
-      10, 0, 0, 10, 0, 10, 25, 100, 10,
-
-      25, 100, 10, 25, 100, 0, 10, 0, 0,
-
-      0, 0, 0, 10, 0, 0, 0, 0, 10,
-
-      0, 0, 10, 10, 0, 0, 10, 0, 10,
-
-      //3d стенки
-      30, 0, 0, 30, 0, 10, 15, 100, 10,
-
-      15, 100, 10, 15, 100, 0, 30, 0, 0,
-
-      40, 0, 0, 40, 0, 10, 25, 100, 10,
-
-      25, 100, 10, 25, 100, 0, 40, 0, 0,
-
-      30, 0, 0, 40, 0, 0, 30, 0, 10,
-
-      30, 0, 10, 40, 0, 0, 40, 0, 10,
-
-      15, 100, 0, 25, 100, 0, 15, 100, 10,
-
-      15, 100, 10, 25, 100, 0, 25, 100, 10,
-
-      //3d стенки
-      10, 20, 0, 10, 20, 10, 30, 20, 0,
-
-      10, 20, 10, 30, 20, 10, 30, 20, 0,
-
-      10, 30, 0, 10, 30, 10, 30, 30, 0,
-
-      10, 30, 10, 30, 30, 10, 30, 30, 0,
-
-      //A2 перед
-      75, 100, 0, 65, 100, 0, 50, 0, 0,
-
-      50, 0, 0, 60, 0, 0, 75, 100, 0,
-
-      60, 30, 0, 60, 20, 0, 80, 30, 0,
-
-      60, 20, 0, 80, 20, 0, 80, 30, 0,
-
-      75, 100, 0, 65, 100, 0, 90, 0, 0,
-
-      90, 0, 0, 80, 0, 0, 75, 100, 0,
-
-      //A2 дно
-      75, 100, 10, 65, 100, 10, 50, 0, 10,
-
-      50, 0, 10, 60, 0, 10, 75, 100, 10,
-
-      60, 30, 10, 60, 20, 10, 80, 30, 10,
-
-      60, 20, 10, 80, 20, 10, 80, 30, 10,
-
-      75, 100, 10, 65, 100, 10, 80, 0, 10,
-
-      90, 0, 10, 80, 0, 10, 75, 100, 10,
-
-      //3d стенки
-      50, 0, 0, 50, 0, 10, 65, 100, 10,
-
-      65, 100, 10, 65, 100, 0, 50, 0, 0,
-
-      60, 0, 0, 60, 0, 10, 75, 100, 10,
-
-      75, 100, 10, 75, 100, 0, 60, 0, 0,
-
-      50, 0, 0, 60, 0, 0, 50, 0, 10,
-
-      50, 0, 10, 60, 0, 0, 60, 0, 10,
-
-      //3d стенки
-      80, 0, 0, 80, 0, 10, 65, 100, 10,
-
-      65, 100, 10, 65, 100, 0, 80, 0, 0,
-
-      90, 0, 0, 90, 0, 10, 75, 100, 10,
-
-      75, 100, 10, 75, 100, 0, 90, 0, 0,
-
-      80, 0, 0, 90, 0, 0, 80, 0, 10,
-
-      80, 0, 10, 90, 0, 0, 90, 0, 10,
-
-      65, 100, 0, 75, 100, 0, 65, 100, 10,
-
-      65, 100, 10, 75, 100, 0, 75, 100, 10,
-
-      //3d стенки
-      60, 20, 0, 60, 20, 10, 80, 20, 0,
-
-      60, 20, 10, 80, 20, 10, 80, 20, 0,
-
-      60, 30, 0, 60, 30, 10, 80, 30, 0,
-
-      60, 30, 10, 80, 30, 10, 80, 30, 0,
-    ]),
-    gl.STATIC_DRAW
-  );
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW);
 }
 
 main();

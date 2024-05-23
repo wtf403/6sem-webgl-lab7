@@ -10,5 +10,6 @@
   "description": "",
   "devDependencies": {
     "live-server": "^1.2.2"
-  }
+  },
+  "homepage": "https://wtf403.github.io/6sem-webgl-lab7"
 }
