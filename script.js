@@ -163,19 +163,10 @@ const arr = [
   0, -40, 5, 10, 40, 5, 10, 40, -5,
 ];
 
-function main() {
-  const canvas = document.querySelector("#canvas");
-  const gl = canvas.getContext("webgl2");
-  if (!gl) {
-    return;
-  }
+const canvas = document.querySelector("#canvas");
+const gl = canvas.getContext("webgl2");
 
-  const sliders = document.querySelectorAll("input[type=range]");
-  sliders.forEach((slider) => {
-    slider.addEventListener("input", updateScene);
-  });
-
-  const vertexShaderSource = `#version 300 es
+const vertexShaderSource = `#version 300 es
   in vec4 a_position;
   in vec3 a_color;
   uniform mat4 u_matrix;
@@ -185,7 +176,7 @@ function main() {
     v_color = a_color;
   }`;
 
-  const fragmentShaderSource = `#version 300 es
+const fragmentShaderSource = `#version 300 es
   precision mediump float;
   in vec3 v_color;
   out vec4 outColor;
@@ -193,89 +184,110 @@ function main() {
     outColor = vec4(v_color, 1.0);
   }`;
 
-  let translation, rotation, fieldOfViewRadians, fudgeFactor;
+let translation, rotation, fieldOfViewRadians, fudgeFactor, cameraAngle;
 
-  function updateScene() {
-    translation = [
-      parseFloat(document.getElementById("x").value),
-      parseFloat(document.getElementById("y").value),
-      parseFloat(document.getElementById("z").value),
-    ];
+function updateScene() {
+  translation = [
+    parseFloat(document.getElementById("x").value),
+    parseFloat(document.getElementById("y").value),
+    parseFloat(document.getElementById("z").value),
+  ];
 
-    rotation = [
-      degToRad(parseFloat(document.getElementById("angleX").value)),
-      degToRad(parseFloat(document.getElementById("angleY").value)),
-      degToRad(parseFloat(document.getElementById("angleZ").value)),
-    ];
+  rotation = [
+    degToRad(parseFloat(document.getElementById("angleX").value)),
+    degToRad(parseFloat(document.getElementById("angleY").value)),
+    degToRad(parseFloat(document.getElementById("angleZ").value)),
+  ];
 
-    fudgeFactor = parseFloat(document.getElementById("fudgeFactor").value);
-    fieldOfViewRadians = degToRad(
-      parseFloat(document.getElementById("fieldOfView").value)
-    );
+  fudgeFactor = parseFloat(document.getElementById("fudgeFactor").value);
+  fieldOfViewRadians = degToRad(
+    parseFloat(document.getElementById("fieldOfView").value)
+  );
+  cameraAngle = degToRad(
+    parseFloat(document.getElementById("cameraAngle").value)
+  );
 
-    drawScene(); // Redraw the scene with the new parameters
-  }
+  drawScene();
+}
 
-  const program = createProgram(gl, vertexShaderSource, fragmentShaderSource);
-  const positionLocation = gl.getAttribLocation(program, "a_position");
-  const colorLocation = gl.getAttribLocation(program, "a_color");
-  const matrixLocation = gl.getUniformLocation(program, "u_matrix");
+const program = createProgram(gl, vertexShaderSource, fragmentShaderSource);
+const positionLocation = gl.getAttribLocation(program, "a_position");
+const colorLocation = gl.getAttribLocation(program, "a_color");
+const matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
-  const positionBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  setGeometry(gl);
+const positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+setGeometry(gl);
 
-  const colorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  setColors(gl);
+const colorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+setColors(gl);
 
-  const vao = gl.createVertexArray();
+const vao = gl.createVertexArray();
+gl.bindVertexArray(vao);
+
+gl.enableVertexAttribArray(positionLocation);
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+
+gl.enableVertexAttribArray(colorLocation);
+gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
+
+translation = [0, 0, -360];
+rotation = [0, 0, 0];
+fieldOfViewRadians = degToRad(60);
+fudgeFactor = 100;
+cameraAngle = degToRad(0);
+
+function drawScene() {
+  webglUtils.resizeCanvasToDisplaySize(gl.canvas);
+
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.enable(gl.DEPTH_TEST);
+
+  gl.useProgram(program);
   gl.bindVertexArray(vao);
 
-  gl.enableVertexAttribArray(positionLocation);
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+  let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+  let zNear = 1;
+  let zFar = 2000;
 
-  gl.enableVertexAttribArray(colorLocation);
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
+  let projectionMatrix = m4.perspective(
+    fieldOfViewRadians,
+    aspect,
+    zNear,
+    zFar,
+    fudgeFactor
+  );
 
-  translation = [0, 0, -360];
-  rotation = [0, 0, 0];
-  fieldOfViewRadians = degToRad(60);
-  fudgeFactor = 1.0;
+  let cameraRadius = 500;
+  let cameraX = Math.cos(cameraAngle) * cameraRadius;
+  let cameraZ = Math.sin(cameraAngle) * cameraRadius;
+  let cameraPosition = [cameraX, 0, cameraZ];
+  let target = [0, 0, 0];
+  let up = [0, 1, 0];
 
-  function drawScene() {
-    webglUtils.resizeCanvasToDisplaySize(gl.canvas);
+  let viewMatrix = m4.lookAt(cameraPosition, target, up);
+  let viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
 
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.enable(gl.DEPTH_TEST);
+  let modelMatrix = m4.identity();
+  modelMatrix = m4.translate(
+    modelMatrix,
+    translation[0],
+    translation[1],
+    translation[2]
+  );
+  modelMatrix = m4.xRotate(modelMatrix, rotation[0]);
+  modelMatrix = m4.yRotate(modelMatrix, rotation[1]);
+  modelMatrix = m4.zRotate(modelMatrix, rotation[2]);
 
-    gl.useProgram(program);
-    gl.bindVertexArray(vao);
+  let matrix = m4.multiply(viewProjectionMatrix, modelMatrix);
 
-    let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    let zNear = 1;
-    let zFar = 2000;
-    let matrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-    matrix = m4.translate(
-      matrix,
-      translation[0],
-      translation[1],
-      translation[2]
-    );
-    matrix = m4.xRotate(matrix, rotation[0]);
-    matrix = m4.yRotate(matrix, rotation[1]);
-    matrix = m4.zRotate(matrix, rotation[2]);
-    matrix = m4.multiply(matrix, m4.lookAt([0, 0, 0], [0, 0, -1], [0, 1, 0]));
+  gl.uniformMatrix4fv(matrixLocation, false, matrix);
 
-    gl.uniformMatrix4fv(matrixLocation, false, matrix);
-
-    gl.drawArrays(gl.TRIANGLES, 0, arr.length / 3);
-  }
-
-  updateScene();
+  gl.drawArrays(gl.TRIANGLES, 0, arr.length / 3);
 }
 
 function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
@@ -324,12 +336,12 @@ function setColors(gl) {
 }
 
 const m4 = {
-  perspective: function (fieldOfViewInRadians, aspect, near, far) {
-    const f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
-    const rangeInv = 1.0 / (near - far);
+  perspective: function (fieldOfViewInRadians, aspect, near, far, fudgeFactor) {
+    var f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
+    var rangeInv = 1.0 / (near - far);
 
     return [
-      f / aspect,
+      fudgeFactor / aspect,
       0,
       0,
       0,
@@ -453,6 +465,9 @@ const m4 = {
       1,
     ];
   },
+  identity: function () {
+    return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+  },
 };
 
 function degToRad(d) {
@@ -480,4 +495,8 @@ function subtractVectors(a, b) {
   return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 }
 
-main();
+document.querySelectorAll("input").forEach((input) => {
+  input.addEventListener("input", updateScene);
+});
+
+updateScene();
