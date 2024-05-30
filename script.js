@@ -164,139 +164,101 @@ const arr = [
 ];
 
 function main() {
-  // Get A WebGL context
-  /** @type {HTMLCanvasElement} */
-  let canvas = document.querySelector("#canvas");
-  let gl = canvas.getContext("webgl");
+  const canvas = document.querySelector("#canvas");
+  const gl = canvas.getContext("webgl2");
   if (!gl) {
     return;
   }
 
-  let program = webglUtils.createProgramFromScripts(gl, [
-    "vertex-shader-2d",
-    "fragment-shader-2d",
-  ]);
-  gl.useProgram(program);
+  const sliders = document.querySelectorAll("input[type=range]");
+  sliders.forEach((slider) => {
+    slider.addEventListener("input", updateScene);
+  });
 
-  let positionLocation = gl.getAttribLocation(program, "a_position");
-  let colorLocation = gl.getUniformLocation(program, "u_color");
-  let matrixLocation = gl.getUniformLocation(program, "u_matrix");
+  const vertexShaderSource = `#version 300 es
+  in vec4 a_position;
+  in vec3 a_color;
+  uniform mat4 u_matrix;
+  out vec3 v_color;
+  void main() {
+    gl_Position = u_matrix * a_position;
+    v_color = a_color;
+  }`;
 
-  let positionBuffer = gl.createBuffer();
+  const fragmentShaderSource = `#version 300 es
+  precision mediump float;
+  in vec3 v_color;
+  out vec4 outColor;
+  void main() {
+    outColor = vec4(v_color, 1.0);
+  }`;
+
+  let translation, rotation, fieldOfViewRadians, fudgeFactor;
+
+  function updateScene() {
+    translation = [
+      parseFloat(document.getElementById("x").value),
+      parseFloat(document.getElementById("y").value),
+      parseFloat(document.getElementById("z").value),
+    ];
+
+    rotation = [
+      degToRad(parseFloat(document.getElementById("angleX").value)),
+      degToRad(parseFloat(document.getElementById("angleY").value)),
+      degToRad(parseFloat(document.getElementById("angleZ").value)),
+    ];
+
+    fudgeFactor = parseFloat(document.getElementById("fudgeFactor").value);
+    fieldOfViewRadians = degToRad(
+      parseFloat(document.getElementById("fieldOfView").value)
+    );
+
+    drawScene(); // Redraw the scene with the new parameters
+  }
+
+  const program = createProgram(gl, vertexShaderSource, fragmentShaderSource);
+  const positionLocation = gl.getAttribLocation(program, "a_position");
+  const colorLocation = gl.getAttribLocation(program, "a_color");
+  const matrixLocation = gl.getUniformLocation(program, "u_matrix");
+
+  const positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-  // Set geometry data
   setGeometry(gl);
 
-  function radToDeg(r) {
-    return (r * 180) / Math.PI;
-  }
+  const colorBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  setColors(gl);
 
-  function degToRad(d) {
-    return (d * Math.PI) / 180;
-  }
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
 
-  // Initial positions
-  let translation = [0, 0, -360]; // Center the letter and move it back a bit for visibility
-  let rotation = [degToRad(0), degToRad(0), degToRad(0)];
-  let color = [Math.random(), Math.random(), Math.random(), 1];
-  let fieldOfViewRadians = degToRad(18);
+  gl.enableVertexAttribArray(positionLocation);
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
 
-  drawScene();
+  gl.enableVertexAttribArray(colorLocation);
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
 
-  // Sliders
-  webglLessonsUI.setupSlider("#x", {
-    slide: updatePosition(0),
-    min: -200,
-    max: 200,
-  });
-  webglLessonsUI.setupSlider("#y", {
-    slide: updatePosition(1),
-    min: -200,
-    max: 200,
-  });
-  webglLessonsUI.setupSlider("#angleX", {
-    value: radToDeg(rotation[0]),
-    slide: updateRotation(0),
-    min: -360,
-    max: 360,
-  });
-  webglLessonsUI.setupSlider("#angleY", {
-    value: radToDeg(rotation[1]),
-    slide: updateRotation(1),
-    min: -360,
-    max: 360,
-  });
-  webglLessonsUI.setupSlider("#angleZ", {
-    value: radToDeg(rotation[2]),
-    slide: updateRotation(2),
-    min: -360,
-    max: 360,
-  });
-  webglLessonsUI.setupSlider("#fieldOfView", {
-    value: radToDeg(fieldOfViewRadians),
-    slide: updateFieldOfView,
-    min: 1,
-    max: 179,
-  });
-
-  function updatePosition(index) {
-    return function (event, ui) {
-      translation[index] = ui.value;
-      drawScene();
-    };
-  }
-
-  function updateRotation(index) {
-    return function (event, ui) {
-      let angleInDegrees = ui.value;
-      let angleInRadians = (angleInDegrees * Math.PI) / 180;
-      rotation[index] = angleInRadians;
-      drawScene();
-    };
-  }
-
-  function updateFieldOfView(event, ui) {
-    fieldOfViewRadians = degToRad(ui.value);
-    drawScene();
-  }
+  translation = [0, 0, -360];
+  rotation = [0, 0, 0];
+  fieldOfViewRadians = degToRad(60);
+  fudgeFactor = 1.0;
 
   function drawScene() {
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     gl.enable(gl.DEPTH_TEST);
 
     gl.useProgram(program);
-
-    gl.enableVertexAttribArray(positionLocation);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-    let size = 3;
-    let type = gl.FLOAT;
-    let normalize = false;
-    let stride = 0;
-    let offset = 0;
-    gl.vertexAttribPointer(
-      positionLocation,
-      size,
-      type,
-      normalize,
-      stride,
-      offset
-    );
-
-    gl.uniform4fv(colorLocation, color);
+    gl.bindVertexArray(vao);
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     let zNear = 1;
     let zFar = 2000;
     let matrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-
     matrix = m4.translate(
       matrix,
       translation[0],
@@ -306,19 +268,65 @@ function main() {
     matrix = m4.xRotate(matrix, rotation[0]);
     matrix = m4.yRotate(matrix, rotation[1]);
     matrix = m4.zRotate(matrix, rotation[2]);
+    matrix = m4.multiply(matrix, m4.lookAt([0, 0, 0], [0, 0, -1], [0, 1, 0]));
 
     gl.uniformMatrix4fv(matrixLocation, false, matrix);
 
-    let primitiveType = gl.TRIANGLES;
-    let count = arr.length / 3;
-    gl.drawArrays(primitiveType, offset, count);
+    gl.drawArrays(gl.TRIANGLES, 0, arr.length / 3);
   }
+
+  updateScene();
 }
 
-let m4 = {
+function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+  const fragmentShader = createShader(
+    gl,
+    gl.FRAGMENT_SHADER,
+    fragmentShaderSource
+  );
+  const program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error(gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
+    return null;
+  }
+  return program;
+}
+
+function createShader(gl, type, source) {
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    console.error(gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+    return null;
+  }
+  return shader;
+}
+
+function setGeometry(gl) {
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW);
+}
+
+function setColors(gl) {
+  const colors = new Float32Array(arr.length);
+  for (let i = 0; i < colors.length; i += 3) {
+    colors[i] = Math.random();
+    colors[i + 1] = Math.random();
+    colors[i + 2] = Math.random();
+  }
+  gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
+}
+
+const m4 = {
   perspective: function (fieldOfViewInRadians, aspect, near, far) {
-    let f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
-    let rangeInv = 1.0 / (near - far);
+    const f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
+    const rangeInv = 1.0 / (near - far);
 
     return [
       f / aspect,
@@ -343,53 +351,53 @@ let m4 = {
     return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1];
   },
   xRotation: function (angleInRadians) {
-    let c = Math.cos(angleInRadians);
-    let s = Math.sin(angleInRadians);
+    const c = Math.cos(angleInRadians);
+    const s = Math.sin(angleInRadians);
     return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1];
   },
   yRotation: function (angleInRadians) {
-    let c = Math.cos(angleInRadians);
-    let s = Math.sin(angleInRadians);
+    const c = Math.cos(angleInRadians);
+    const s = Math.sin(angleInRadians);
     return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1];
   },
   zRotation: function (angleInRadians) {
-    let c = Math.cos(angleInRadians);
-    let s = Math.sin(angleInRadians);
+    const c = Math.cos(angleInRadians);
+    const s = Math.sin(angleInRadians);
     return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
   },
   multiply: function (a, b) {
-    let a00 = a[0 * 4 + 0];
-    let a01 = a[0 * 4 + 1];
-    let a02 = a[0 * 4 + 2];
-    let a03 = a[0 * 4 + 3];
-    let a10 = a[1 * 4 + 0];
-    let a11 = a[1 * 4 + 1];
-    let a12 = a[1 * 4 + 2];
-    let a13 = a[1 * 4 + 3];
-    let a20 = a[2 * 4 + 0];
-    let a21 = a[2 * 4 + 1];
-    let a22 = a[2 * 4 + 2];
-    let a23 = a[2 * 4 + 3];
-    let a30 = a[3 * 4 + 0];
-    let a31 = a[3 * 4 + 1];
-    let a32 = a[3 * 4 + 2];
-    let a33 = a[3 * 4 + 3];
-    let b00 = b[0 * 4 + 0];
-    let b01 = b[0 * 4 + 1];
-    let b02 = b[0 * 4 + 2];
-    let b03 = b[0 * 4 + 3];
-    let b10 = b[1 * 4 + 0];
-    let b11 = b[1 * 4 + 1];
-    let b12 = b[1 * 4 + 2];
-    let b13 = b[1 * 4 + 3];
-    let b20 = b[2 * 4 + 0];
-    let b21 = b[2 * 4 + 1];
-    let b22 = b[2 * 4 + 2];
-    let b23 = b[2 * 4 + 3];
-    let b30 = b[3 * 4 + 0];
-    let b31 = b[3 * 4 + 1];
-    let b32 = b[3 * 4 + 2];
-    let b33 = b[3 * 4 + 3];
+    const a00 = a[0 * 4 + 0];
+    const a01 = a[0 * 4 + 1];
+    const a02 = a[0 * 4 + 2];
+    const a03 = a[0 * 4 + 3];
+    const a10 = a[1 * 4 + 0];
+    const a11 = a[1 * 4 + 1];
+    const a12 = a[1 * 4 + 2];
+    const a13 = a[1 * 4 + 3];
+    const a20 = a[2 * 4 + 0];
+    const a21 = a[2 * 4 + 1];
+    const a22 = a[2 * 4 + 2];
+    const a23 = a[2 * 4 + 3];
+    const a30 = a[3 * 4 + 0];
+    const a31 = a[3 * 4 + 1];
+    const a32 = a[3 * 4 + 2];
+    const a33 = a[3 * 4 + 3];
+    const b00 = b[0 * 4 + 0];
+    const b01 = b[0 * 4 + 1];
+    const b02 = b[0 * 4 + 2];
+    const b03 = b[0 * 4 + 3];
+    const b10 = b[1 * 4 + 0];
+    const b11 = b[1 * 4 + 1];
+    const b12 = b[1 * 4 + 2];
+    const b13 = b[1 * 4 + 3];
+    const b20 = b[2 * 4 + 0];
+    const b21 = b[2 * 4 + 1];
+    const b22 = b[2 * 4 + 2];
+    const b23 = b[2 * 4 + 3];
+    const b30 = b[3 * 4 + 0];
+    const b31 = b[3 * 4 + 1];
+    const b32 = b[3 * 4 + 2];
+    const b33 = b[3 * 4 + 3];
     return [
       b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30,
       b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31,
@@ -421,11 +429,55 @@ let m4 = {
   zRotate: function (m, angleInRadians) {
     return m4.multiply(m, m4.zRotation(angleInRadians));
   },
+  lookAt: function (cameraPosition, target, up) {
+    const zAxis = normalize(subtractVectors(cameraPosition, target));
+    const xAxis = normalize(cross(up, zAxis));
+    const yAxis = cross(zAxis, xAxis);
+
+    return [
+      xAxis[0],
+      xAxis[1],
+      xAxis[2],
+      0,
+      yAxis[0],
+      yAxis[1],
+      yAxis[2],
+      0,
+      zAxis[0],
+      zAxis[1],
+      zAxis[2],
+      0,
+      cameraPosition[0],
+      cameraPosition[1],
+      cameraPosition[2],
+      1,
+    ];
+  },
 };
 
-// Fill the buffer with the values that define a letter 'F'.
-function setGeometry(gl) {
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW);
+function degToRad(d) {
+  return (d * Math.PI) / 180;
+}
+
+function radToDeg(r) {
+  return (r * 180) / Math.PI;
+}
+
+function normalize(v) {
+  const length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+  return [v[0] / length, v[1] / length, v[2] / length];
+}
+
+function cross(a, b) {
+  return [
+    a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0],
+  ];
+}
+
+function subtractVectors(a, b) {
+  return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 }
 
 main();
